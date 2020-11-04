@@ -1,11 +1,12 @@
-from Project.Managers.QuestionManager import QuestionManger
-from Project.Managers.OptionsManager import OptionsManager
-from Project.Simulator import simulate
+from Project.Components.Managers.QuestionManager import QuestionManger
+from Project.Components.Managers.OptionsManager import OptionsManager
+from Project.Components.Simulator import simulate
+from Project.Consts.OurQuestions import *
 
 
 class Consultant:
     def __init__(self):
-        self.question_manager = QuestionManger()
+        self.question_manager = QuestionManger(questions_array)
         self.question_manager.start()
         self.options_manager = OptionsManager(self.question_manager.answers)
         self.options_manager.start()

@@ -1,13 +1,13 @@
 import pandas as pd
-from Project.Strategies.Strategies import Strategy
-from Project.CurrentStockPrice import current_stock_price
+from Project.Components.Strategies import *
+from Project.Consts.Stats import current_stock_price
 
 
 class OptionsManager:
     def __init__(self, answers):
         self.current_stock_price = current_stock_price
         self.answers = answers
-        path = "Data/{}.csv".format(answers["option period"])
+        path = "Project/Data/{}.csv".format(answers["option period"])
         self.data = pd.read_csv(path)
         self.adjust_data()
         self.options_list = []
@@ -21,7 +21,12 @@ class OptionsManager:
         self.data = pd.concat([calls, strikes, puts], axis=1)
 
     def start(self):
-        s = Strategy(self)
+        if input("For Choosing Options Manually Pres 1, Otherwise Press 2\n") == "1":
+            s = Manually(self)
+            s.execute()
+        else:
+            s = IronCodorStrategy(self)
+            s.execute()
         return self.calc_total_cost()
 
     def calc_total_cost(self):

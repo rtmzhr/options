@@ -1,3 +1,3 @@
-from Project.Consultanat import Consultant
+from Project.Components.Consultanat import Consultant
 
 consultant = Consultant()
