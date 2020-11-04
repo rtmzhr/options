@@ -1,6 +1,6 @@
-from Managers.QuestionManager import QuestionManger
-from Managers.OptionsManager import OptionsManager
-from Simulator import simulate
+from Project.Managers.QuestionManager import QuestionManger
+from Project.Managers.OptionsManager import OptionsManager
+from Project.Simulator import simulate
 
 
 class Consultant:

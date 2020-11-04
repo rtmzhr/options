@@ -1,6 +1,6 @@
 import pandas as pd
-from Strategies.Strategies import Strategy
-from CurrentStockPrice import current_stock_price
+from Project.Strategies.Strategies import Strategy
+from Project.CurrentStockPrice import current_stock_price
 
 
 class OptionsManager:

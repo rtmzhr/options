@@ -1,5 +1,5 @@
-from Questions.OurQuestions import *
-from Nodes import NodeList
+from Project.Questions.OurQuestions import *
+from Project.Nodes import NodeList
 
 
 def init_questions(question_manager):

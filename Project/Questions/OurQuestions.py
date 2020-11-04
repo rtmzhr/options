@@ -1,4 +1,4 @@
-from Questions.Question import Question
+from Project.Questions.Question import Question
 
 
 def validate_general_number(number, question):

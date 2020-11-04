@@ -1,6 +1,6 @@
 import numpy as np
-from Options.OptionTypes import PutOption, CallOption
-from CurrentStockPrice import current_stock_price
+from Project.Options.OptionTypes import PutOption, CallOption
+from Project.CurrentStockPrice import current_stock_price
 average_growth_per_year = 0.2
 
 

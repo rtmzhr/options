@@ -1,5 +1,5 @@
-from QuestionsFlowCreator import init_questions
-from CurrentStockPrice import current_stock_price
+from Project.QuestionsFlowCreator import init_questions
+from Project.CurrentStockPrice import current_stock_price
 
 
 class QuestionManger:

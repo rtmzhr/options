@@ -1,6 +1,3 @@
-from CurrentStockPrice import current_stock_price
-
-
 class Option:
     def __init__(self, buy_or_sell, data, center, amount):
         self.option_execution = buy_or_sell
