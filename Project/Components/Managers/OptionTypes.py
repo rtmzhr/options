@@ -61,7 +61,7 @@ class CallOption(Option):
 class BuyCallOption(CallOption):
     def __init__(self, data, strike, amount=1):
         self.option_execution = "buy"
-        PutOption.__init__(self, data, strike, amount)
+        CallOption.__init__(self, data, strike, amount)
 
     def get_profit(self, future_strike):
         profit = 0
@@ -73,7 +73,7 @@ class BuyCallOption(CallOption):
 class SellCallOption(CallOption):
     def __init__(self, data, strike, amount=1):
         self.option_execution = "sell"
-        PutOption.__init__(self, data, strike, amount)
+        CallOption.__init__(self, data, strike, amount)
 
     def get_profit(self, future_strike):
         profit = 0
