@@ -1,15 +1,13 @@
-from Project.Consts.Stats import current_stock_price
 from Project.Components.Nodes import *
 
 
 class QuestionManger:
 
-    def __init__(self, questions_array):
-        self.welcome_message = "Hi!\n" \
-                               "We will ask you a few questions to get to know you better\n" \
-                               "The current Facebook stock is {}\n".format(current_stock_price)
+    def __init__(self, questions_array, welcome_message=''):
         self.answers = {}
+        self.welcome_message = welcome_message
         init_questions(self, questions_array)
+        self.start()
 
     def start(self):
         print(self.welcome_message)
@@ -17,7 +15,9 @@ class QuestionManger:
         while qs_itr is not None:
             answer = input(qs_itr.data.question_text)
             if qs_itr.data.translate_method is not None:
-                while not qs_itr.data.translate_method(answer, qs_itr.data):
+                while not qs_itr.data.translate_method(answer, qs_itr.data,
+                                                       qs_itr.data.answer_lower_bound, qs_itr.data.answer_upper_bound,
+                                                       qs_itr.data.percentageanswer):
                     answer = input("Invalid input!\n" + qs_itr.data.question_text)
             self.answers[qs_itr.data.title] = qs_itr.data.answer
             qs_itr = qs_itr.next

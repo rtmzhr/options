@@ -1,24 +1,17 @@
-import pandas as pd
 from Project.Components.Strategies import *
-from Project.Consts.Stats import current_stock_price
+from Project.Components.Managers.DataManager import option_data
 
 
 class OptionsManager:
     def __init__(self, answers):
-        self.current_stock_price = current_stock_price
         self.answers = answers
-        path = "Project/Data/{}.csv".format(answers["option period"])
-        self.data = pd.read_csv(path)
         self.adjust_data()
         self.options_list = []
         self.total_cost = 0
+        self.start()
 
     def adjust_data(self):
-        self.data = self.data.replace('-', 0)
-        calls = self.data.iloc[:, 0]
-        strikes = self.data.iloc[:, 5]
-        puts = self.data.iloc[:, 6]
-        self.data = pd.concat([calls, strikes, puts], axis=1)
+        option_data.data = option_data.data.replace('-', 0)
 
     def start(self):
         if input("For Choosing Options Manually Pres 1, Otherwise Press 2\n") == "1":

@@ -1,10 +1,14 @@
 class Question:
     answer = None
 
-    def __init__(self, title, question_text, translate_method=None):
+    def __init__(self, title, question_text, answer_lower_bound, answer_upper_bound,
+                 translate_method=None, percentageanswer=False):
+        self.percentageanswer = percentageanswer
         self.title = title
         self.question_text = question_text
         self.translate_method = translate_method
+        self.answer_lower_bound = answer_lower_bound
+        self.answer_upper_bound = answer_upper_bound
 
     def answer_question(self, answer):
         if self.translate_method is None and answer.isdigit():

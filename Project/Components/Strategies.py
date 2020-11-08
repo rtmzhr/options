@@ -1,9 +1,9 @@
 import numpy as np
-from Project.Components.Managers.OptionTypes import *
-from Project.Components.ValidationMethods import *
-from Project.Components.Question import *
-from Project.Components.Managers.QuestionManager import *
-from Project.Consts.Stats import *
+from Project.Components.OptionTypes import *
+from Project.Components.Managers.QuestionManager import QuestionManger
+from Project.Components.Question import Question
+from Project.Components.ValidationMethods import validate_int_range
+from Project.Components.Managers.DataManager import option_data, current_stock_price, average_growth_per_year
 
 
 class Strategy:
@@ -17,27 +17,23 @@ class Strategy:
         self.risk_appetite = option_manager.answers["risk appetite"]
         self.estimated_price_by_user = option_manager.answers["price estimation"]
         self.estimated_price = ((1 + average_growth_per_year) ** (self.option_period / 12)) * current_stock_price
-        data = self.option_manager.data
-        self.strike_offset = (16 + 2 * (self.option_period - self.risk_appetite)) \
+        self.strike_offset = 5 + (11 + 2 * (self.option_period - self.risk_appetite)) \
                              * np.array([self.increase_prob, self.decrease_prob])
-        rounded_price = int(current_stock_price) - int(current_stock_price) % 5
-        current_stock_price_index = int(data.index[data.iloc[:, 1] == rounded_price].to_numpy())
-        lower_bound = data.iloc[current_stock_price_index - int(self.strike_offset[1]), 1]
-        upper_bound = data.iloc[current_stock_price_index + int(self.strike_offset[0]), 1]
-        self.lower_bound_index = int(data.index[data.iloc[:, 1] == lower_bound].to_numpy())
-        self.upper_bound_index = int(data.index[data.iloc[:, 1] == upper_bound].to_numpy())
 
-    def buy_call(self, strike):
-        self.option_manager.options_list.append(BuyCallOption(self.option_manager.data, strike))
+        self.lower_bound_index = option_data.get_option_index(current_stock_price, -1 * int(self.strike_offset[1]))
+        self.upper_bound_index = option_data.get_option_index(current_stock_price,  int(self.strike_offset[0]))
 
-    def sell_call(self, strike):
-        self.option_manager.options_list.append(SellCallOption(self.option_manager.data, strike))
+    def buy_call(self, strike_index):
+        self.option_manager.options_list.append(BuyCallOption(strike_index))
 
-    def buy_put(self, strike):
-        self.option_manager.options_list.append(BuyPutOption(self.option_manager.data, strike))
+    def sell_call(self, strike_index):
+        self.option_manager.options_list.append(SellCallOption(strike_index))
 
-    def sell_put(self, strike):
-        self.option_manager.options_list.append(SellPutOption(self.option_manager.data, strike))
+    def buy_put(self, strike_index):
+        self.option_manager.options_list.append(BuyPutOption(strike_index))
+
+    def sell_put(self, strike_index):
+        self.option_manager.options_list.append(SellPutOption(strike_index))
 
 
 def get_option_choice(question):
@@ -50,9 +46,9 @@ def get_option_choice(question):
 class Manually(Strategy):
     choose_opt_type_question = Question("option type", "Please Choose which open do you want\n"
                                                        "1 for Buy-Put    2 for Sell-Put\n"
-                                        "3 for Buy-Call   4 for Sell-Call\n", one_to_four_range)
-    choose_opt_strike_question = Question("option strike","what's the option's strike?\n"
-                                          " Please write an Integer\n", validate_general_number)
+                                                       "3 for Buy-Call   4 for Sell-Call\n", 1, 4, validate_int_range)
+    choose_opt_strike_question = Question("option strike", "what's the option's strike?\n"
+                                                           " Please write an Integer\n", 100, 400, validate_int_range)
 
     def __init__(self, option_manager):
         Strategy.__init__(self, option_manager)
@@ -79,8 +75,7 @@ class IronCodorStrategy(Strategy):
         Strategy.__init__(self, option_manager)
 
     def execute(self):
-        data = self.option_manager.data
-        self.buy_put(data.iloc[self.lower_bound_index - 1, 1])
-        self.sell_put(data.iloc[self.lower_bound_index, 1])
-        self.sell_call(data.iloc[self.upper_bound_index, 1])
-        self.buy_call(data.iloc[self.upper_bound_index + 1, 1])
+        self.buy_put(self.lower_bound_index - 1)
+        self.sell_put(self.lower_bound_index)
+        self.sell_call(self.upper_bound_index)
+        self.buy_call(self.upper_bound_index + 1)
