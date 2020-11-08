@@ -1,14 +1,14 @@
-from Project.Components.Managers.DataManager import option_data
-
-
 class Option:
-    def __init__(self, strike_index, amount):
+    def __init__(self, data, strike, column, amount):
         self.amount = amount
-        self.strike = option_data.strikes_array[strike_index]
-        self.price = 0
+        self.price = float(data[data.iloc[:, 1] == strike].iloc[0, column])
+        self.strike = strike
 
     def get_cost(self):
-        return self.price * self.amount
+        x = -1
+        if self.option_execution == "buy":
+            x = 1
+        return x * self.price * self.amount
 
     def get_profit_after_costs(self, future_strike):
         return self.get_profit(future_strike) - self.get_cost()
@@ -23,16 +23,15 @@ class Option:
 
 
 class PutOption(Option):
-    def __init__(self, strike_index, amount):
+    def __init__(self, data, strike, amount):
         self.option_type = "put"
-        Option.__init__(self, strike_index, amount)
-        self.price = option_data.get_option_price(self.strike)["Puts"]
+        Option.__init__(self, data, strike, 2, amount)
 
 
 class BuyPutOption(PutOption):
-    def __init__(self, strike_index, amount=1):
+    def __init__(self, data, strike, amount=1):
         self.option_execution = "buy"
-        PutOption.__init__(self, strike_index, amount)
+        PutOption.__init__(self, data, strike, amount)
 
     def get_profit(self, future_strike):
         profit = 0
@@ -42,9 +41,9 @@ class BuyPutOption(PutOption):
 
 
 class SellPutOption(PutOption):
-    def __init__(self, strike_index, amount=1):
+    def __init__(self, data, strike, amount=1):
         self.option_execution = "sell"
-        PutOption.__init__(self, strike_index, amount)
+        PutOption.__init__(self, data, strike, amount)
 
     def get_profit(self, future_strike):
         profit = 0
@@ -52,21 +51,17 @@ class SellPutOption(PutOption):
             profit = (future_strike - self.strike) * self.amount
         return profit
 
-    def get_cost(self):
-        return -1 * Option.get_cost(self)
-
 
 class CallOption(Option):
-    def __init__(self, strike_index, amount):
+    def __init__(self, data, strike, amount):
         self.option_type = "call"
-        Option.__init__(self, strike_index, amount)
-        self.price = option_data.get_option_price(self.strike)["Calls"]
+        Option.__init__(self, data, strike, 0, amount)
 
 
 class BuyCallOption(CallOption):
-    def __init__(self, strike_index, amount=1):
+    def __init__(self, data, strike, amount=1):
         self.option_execution = "buy"
-        CallOption.__init__(self, strike_index, amount)
+        PutOption.__init__(self, data, strike, amount)
 
     def get_profit(self, future_strike):
         profit = 0
@@ -76,15 +71,12 @@ class BuyCallOption(CallOption):
 
 
 class SellCallOption(CallOption):
-    def __init__(self, strike_index, amount=1):
+    def __init__(self, data, strike, amount=1):
         self.option_execution = "sell"
-        CallOption.__init__(self, strike_index, amount)
+        PutOption.__init__(self, data, strike, amount)
 
     def get_profit(self, future_strike):
         profit = 0
         if future_strike > self.strike:
             profit = (self.strike - future_strike) * self.amount
         return profit
-
-    def get_cost(self):
-        return -1 * Option.get_cost(self)
